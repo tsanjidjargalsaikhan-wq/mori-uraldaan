@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<title>Хэрэглэгчийн бүртгэл</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #111;
+}
+
+.container {
+  width: 90%;
+  margin: 50px auto;
+  background: #ddd;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+  gap: 40px;
+}
+
+/* LEFT */
+.left input {
+  display: block;
+  width: 250px;
+  padding: 10px;
+  margin: 15px 0;
+  border: 3px solid #4aa3df;
+  border-radius: 10px;
+}
+
+.left button {
+  padding: 10px 30px;
+  border: 3px solid #4aa3df;
+  border-radius: 10px;
+  background: #bcdffb;
+  cursor: pointer;
+}
+
+/* TABLE */
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 3px solid #4aa3df;
+  padding: 15px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Хэрэглэгчийн бүртгэл</h1>
+
+  <div class="flex">
+
+    <div class="left">
+      <input type="text" id="ovog" placeholder="Овог">
+      <input type="text" id="ner" placeholder="Нэр">
+      <input type="number" id="nas" placeholder="Нас">
+
+      <button onclick="addUser()">Бүртгэх</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>ОВОГ</th>
+          <th>НЭР</th>
+          <th>НАС</th>
+          <th>ҮЙЛДЭЛ</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<script>
+let count = 1;
+
+function addUser() {
+  let ovog = document.getElementById("ovog").value;
+  let ner = document.getElementById("ner").value;
+  let nas = document.getElementById("nas").value;
+
+  if (ovog === "" || ner === "" || nas === "") {
+    alert("Бүх талбарыг бөглөнө үү!");
+    return;
+  }
+
+  let tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td>${count}</td>
+    <td>${ovog}</td>
+    <td>${ner}</td>
+    <td>${nas}</td>
+    <td><button class="delete-btn">X</button></td>
+  `;
+
+  tr.querySelector("button").onclick = function() {
+    tr.remove();
+  };
+
+  document.getElementById("tableBody").appendChild(tr);
+
+  count++;
+
+  document.getElementById("ovog").value = "";
+  document.getElementById("ner").value = "";
+  document.getElementById("nas").value = "";
+}
+</script>
+
+</body>
+</html>

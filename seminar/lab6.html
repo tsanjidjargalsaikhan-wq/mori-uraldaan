@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Бүртгэл</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+
+/* Дунд байрлах box */
+.container {
+    width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+
+    border-radius: 10px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 90%;
+    padding: 8px;
+    margin: 5px 0;
+}
+
+button {
+    padding: 8px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 8px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Хэрэглэгчийн бүртгэл</h2>
+
+    <input type="text" id="ovog" placeholder="Овог"><br>
+    <input type="text" id="ner" placeholder="Нэр"><br>
+    <input type="number" id="nas" placeholder="Нас"><br>
+
+    <button onclick="burtgeh()">Бүртгэх</button>
+
+    <table id="table">
+        <tr>
+            <th>Овог нэр</th>
+            <th>Нас</th>
+            <th>Үйлдэл</th>
+        </tr>
+    </table>
+</div>
+
+<script>
+function burtgeh() {
+    let ner = document.getElementById("ner").value;
+    let ovog = document.getElementById("ovog").value;
+    let nas = document.getElementById("nas").value;
+
+    if(ner === "" || ovog === "" || nas === "") {
+        alert("Бүгдийг бөглөнө үү!");
+        return;
+    }
+
+    let table = document.getElementById("table");
+
+    let tr = document.createElement("tr");
+
+    let td1 = document.createElement("td");
+    td1.innerText = ovog + " " + ner;
+
+    let td2 = document.createElement("td");
+    td2.innerText = nas;
+
+    let td3 = document.createElement("td");
+
+    let btn = document.createElement("button");
+    btn.innerText = "Устгах";
+
+    btn.onclick = function() {
+        tr.remove();
+    };
+
+    td3.appendChild(btn);
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+
+    table.appendChild(tr);
+
+    // цэвэрлэх
+    document.getElementById("ner").value = "";
+    document.getElementById("ovog").value = "";
+    document.getElementById("nas").value = "";
+}
+</script>
+
+</body>
+</html>

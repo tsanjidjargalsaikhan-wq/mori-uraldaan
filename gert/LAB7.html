@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Солонгос-Монгол </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .animate-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex flex-col items-center p-4">
+  <div id="app" class="w-full max-w-md bg-white rounded-[40px] shadow-2xl min-h-[600px] flex flex-col overflow-hidden">
+    <!-- Header -->
+    <div class="p-6 flex items-center justify-between border-b border-slate-50">
+      <button id="back-btn" class="p-2 bg-slate-50 rounded-xl text-slate-400 hidden">
+        <i data-lucide="chevron-left"></i>
+      </button>
+      <h1 id="header-title" class="text-sm font-black text-slate-800 uppercase tracking-widest flex-1 text-center">
+        Солонгос-Монгол
+      </h1>
+      <div class="w-9"></div>
+    </div>
+
+    <!-- Content Area -->
+    <div id="content" class="flex-1"></div>
+  </div>
+
+  <script>
+    // --- State ---
+    let state = {
+      view: 'menu',
+      currentUnit: 1,
+      mode: 'flashcard',
+      direction: 'en-mn', // en-mn = Солонгос → Монгол, mn-en = Монгол → Солонгос
+      currentIndex: 0,
+      showAnswer: false,
+      userInput: '',
+      feedback: null,
+      shuffledWords: []
+    };
+
+    // --- Анхны өгөгдөл (Солонгос-Монгол) ---
+    const defaultWordsData = [
+      {
+        id: 1,
+        name: "Unit 1",
+        words: [
+          { id: 121, kr: "긴 머리", mn: "Урт үс", learned: false },
+          { id: 122, kr: "짧은 머리", mn: "Богино үс", learned: false },
+          { id: 123, kr: "단발머리", mn: "Халимаг үс", learned: false },
+          { id: 124, kr: "파마머리", mn: "Химитэй үс", learned: false },
+          { id: 125, kr: "생머리", mn: "Шулуун үс", learned: false },
+          { id: 126, kr: "날씬하다", mn: "Туранхай", learned: false },
+          { id: 127, kr: "보통이다", mn: "Энгийн, дундаж", learned: false },
+          { id: 128, kr: "통통하다", mn: "Бөмбөгөр, махлаг", learned: false },
+          { id: 129, kr: "잘생겼다", mn: "Царайлаг", learned: false },
+          { id: 130, kr: "멋있다", mn: "Сайхан, ганган", learned: false },
+          { id: 131, kr: "예쁘다", mn: "Хөөрхөн", learned: false },
+          { id: 132, kr: "귀엽다", mn: "Өхөөрдөм, эгдүүтэй", learned: false },
+          { id: 133, kr: "닮다", mn: "Дуурайх, төстэй байх", learned: false },
+          { id: 134, kr: "빨간색", mn: "Улаан өнгө", learned: false },
+          { id: 135, kr: "노란색", mn: "Шар өнгө", learned: false },
+          { id: 136, kr: "파란색", mn: "Цэнхэр өнгө", learned: false },
+          { id: 137, kr: "하얀색", mn: "Цагаан өнгө", learned: false },
+          { id: 138, kr: "까만색", mn: "Хар өнгө", learned: false },
+          { id: 139, kr: "녹색", mn: "Ногоон өнгө", learned: false },
+          { id: 140, kr: "갈색", mn: "Бор, хүрэн өнгө", learned: false },
+          { id: 141, kr: "입다", mn: "Өмсөх (хувцас)", learned: false },
+          { id: 142, kr: "벗다", mn: "Тайлах (хувцас)", learned: false },
+          { id: 143, kr: "신다", mn: "Өмсөх (гутал, оймс)", learned: false },
+          { id: 144, kr: "쓰다", mn: "Өмсөх, зүүх (малгай, шил)", learned: false },
+          { id: 145, kr: "끼다", mn: "Өмсөх, зүүх (бээлий, бөгж)", learned: false },
+          { id: 146, kr: "가죽", mn: "Арьс", learned: false },
+          { id: 147, kr: "다이어트", mn: "Хоолоо сойх, турах", learned: false },
+          { id: 148, kr: "메다", mn: "Үүрэх (цүнх)", learned: false },
+          { id: 149, kr: "부지런하다", mn: "Ажилсаг, хичээнгүй", learned: false },
+          { id: 150, kr: "선풍기", mn: "Сэнс", learned: false },
+          { id: 151, kr: "쉽게", mn: "Амархан", learned: false },
+          { id: 152, kr: "열쇠고리", mn: "Түлхүүрийн оосор", learned: false },
+          { id: 153, kr: "운동복", mn: "Биеийн тамирын хувцас", learned: false },
+          { id: 154, kr: "주머니", mn: "Халаас", learned: false },
+          { id: 155, kr: "지퍼", mn: "Цахилгаан товч", learned: false },
+          { id: 156, kr: "활발하다", mn: "Хөдөлгөөнтэй, цовоо", learned: false }
+        ]
+      },
+    ];
+
+    // Add empty units up to 16
+    for (let i = 2; i <= 16; i++) {
+      defaultWordsData.push({ id: i, name: `Unit ${i}`, words: [] });
+    }
+
+    // --- Өгөгдлийг хуулах ---
+    let wordsData = JSON.parse(JSON.stringify(defaultWordsData));
+
+    // --- LocalStorage functions ---
+    function saveProgress() {
+      localStorage.setItem('koreanVocab', JSON.stringify(wordsData));
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('koreanVocab');
+      if (saved) {
+        try {
+          wordsData = JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to load progress', e);
+        }
+      }
+    }
+
+    function resetProgress() {
+      if (confirm('Бүх цээжилсэн тэмдэглэгээг устгах уу?')) {
+        wordsData = JSON.parse(JSON.stringify(defaultWordsData));
+        localStorage.removeItem('koreanVocab');
+        state.shuffledWords = [];
+        render();
+      }
+    }
+
+    // --- Shuffle функц ---
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+
+    // --- Цээжлээгүй үгс авах ---
+    function getQuizWords() {
+      const activeUnit = wordsData.find(u => u.id === state.currentUnit);
+      if (!activeUnit) return [];
+      
+      const unlearnedWords = activeUnit.words.filter(w => !w.learned);
+      
+      if (state.shuffledWords.length === 0 || 
+          state.shuffledWords.length !== unlearnedWords.length) {
+        state.shuffledWords = shuffleArray(unlearnedWords);
+      }
+      
+      return state.shuffledWords;
+    }
+
+    // --- Анхны өгөгдлийг ачаалах ---
+    loadProgress();
+
+    // --- Render ---
+    function render() {
+      const contentDiv = document.getElementById('content');
+      const backBtn = document.getElementById('back-btn');
+      const headerTitle = document.getElementById('header-title');
+
+      if (state.view === 'menu') {
+        backBtn.classList.add('hidden');
+        headerTitle.innerText = "Солонгос-Монгол";
+        contentDiv.innerHTML = renderMenu();
+      } else {
+        backBtn.classList.remove('hidden');
+        headerTitle.innerText = `Unit ${state.currentUnit}`;
+        contentDiv.innerHTML = renderQuiz();
+      }
+
+      lucide.createIcons();
+      
+      const input = document.getElementById('quiz-input');
+      if (input) input.focus();
+    }
+
+    function renderMenu() {
+      return `
+        <div class="p-6 space-y-8 animate-in">
+          <section>
+            <h2 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-4">Суралцах горим</h2>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="updateMode('flashcard')" class="p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all ${state.mode === 'flashcard' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-500'}">
+                <i data-lucide="book-open"></i>
+                <span class="text-xs font-bold">Flashcard</span>
+              </button>
+              <button onclick="updateMode('writing')" class="p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all ${state.mode === 'writing' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-500'}">
+                <i data-lucide="edit-3"></i>
+                <span class="text-xs font-bold">Бичих</span>
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-4">Чиглэл</h2>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="updateDirection('en-mn')" class="p-4 rounded-2xl border-2 font-bold transition-all ${state.direction === 'en-mn' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-500'}">
+                Солонгос → Монгол
+              </button>
+              <button onclick="updateDirection('mn-en')" class="p-4 rounded-2xl border-2 font-bold transition-all ${state.direction === 'mn-en' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-500'}">
+                Монгол → Солонгос
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-4">Unit сонгох</h2>
+            <div class="grid grid-cols-4 gap-2">
+              ${wordsData.map(u => {
+                const remainingWords = u.words.filter(w => !w.learned).length;
+                return `
+                  <button 
+                    onclick="selectUnit(${u.id})"
+                    ${u.words.length === 0 ? 'disabled' : ''}
+                    class="py-4 rounded-xl text-center font-bold transition-all relative ${state.currentUnit === u.id ? 'bg-blue-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'} ${u.words.length === 0 ? 'opacity-30' : ''}"
+                  >
+                    ${u.id}
+                    ${remainingWords < u.words.length && u.words.length > 0 ? `
+                      <span class="absolute -top-1 -right-1 bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                        ${remainingWords}
+                      </span>
+                    ` : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+
+          <section>
+            <button onclick="resetProgress()" class="w-full py-3 text-sm text-red-500 border border-red-200 rounded-xl hover:bg-red-50 transition-all">
+              <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
+              Цээжилсэн түүх устгах
+            </button>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderQuiz() {
+      const quizWords = getQuizWords();
+
+      if (quizWords.length === 0) {
+        return `
+          <div class="p-10 text-center animate-in">
+            <i data-lucide="check-circle-2" class="w-12 h-12 text-green-600 mx-auto mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Баяр хүргэе!</h2>
+            <p class="text-slate-500 mb-6">Та энэ хичээлийн бүх үгийг цээжилсэн байна.</p>
+            <button onclick="updateView('menu')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold">Буцах</button>
+          </div>
+        `;
+      }
+
+      if (state.currentIndex >= quizWords.length) {
+        state.currentIndex = quizWords.length - 1;
+      }
+      if (state.currentIndex < 0) {
+        state.currentIndex = 0;
+      }
+
+      const currentWord = quizWords[state.currentIndex];
+      const question = state.direction === 'en-mn' ? currentWord.kr : currentWord.mn;
+      const answer = state.direction === 'en-mn' ? currentWord.mn : currentWord.kr;
+      const progress = ((state.currentIndex + 1) / quizWords.length) * 100;
+
+      return `
+        <div class="p-6 flex flex-col h-full animate-in">
+          <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6">
+            <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+          </div>
+
+          <div class="flex-1 flex flex-col justify-center">
+            <div class="bg-white border border-slate-100 shadow-xl rounded-[40px] p-8 text-center relative">
+              <button onclick="markLearned(${currentWord.id})" class="absolute top-4 right-4 text-green-500 p-2 hover:bg-green-50 rounded-full">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              </button>
+              
+              <h3 class="text-4xl font-black text-slate-800 mb-6">${question}</h3>
+              
+              ${state.direction === 'en-mn' ? `
+                <button onclick='speak("${question.replace(/"/g, '&quot;')}")' class="p-3 bg-blue-50 text-blue-600 rounded-full mb-6">
+                  <i data-lucide="volume-2" class="w-6 h-6"></i>
+                </button>
+              ` : ''}
+
+              <div class="w-full mt-6">
+                ${state.mode === 'flashcard' ? `
+                  ${state.showAnswer ? `
+                    <div class="animate-in">
+                      <p class="text-2xl font-bold text-blue-600">${answer}</p>
+                      ${state.direction === 'mn-en' ? `
+                        <button onclick='speak("${answer.replace(/"/g, '&quot;')}")' class="mt-2 p-2 bg-blue-50 text-blue-600 rounded-full">
+                          <i data-lucide="volume-2" class="w-4 h-4"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  ` : `
+                    <button onclick="revealAnswer('${answer.replace(/'/g, "\\'")}')" class="w-full py-4 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 font-bold hover:border-blue-400 hover:text-blue-500 transition-all">Хариу харах</button>
+                  `}
+                ` : `
+                  <div class="space-y-4">
+                    <input 
+                      id="quiz-input"
+                      type="text"
+                      oninput="updateUserInput(this.value)"
+                      onkeydown="if(event.key === 'Enter') checkAnswer()"
+                      class="w-full p-4 text-center text-xl font-bold rounded-2xl border-2 outline-none transition-all ${state.feedback === 'correct' ? 'border-green-500 bg-green-50' : state.feedback === 'wrong' ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:border-blue-500'}"
+                      placeholder="..."
+                      autocomplete="off"
+                      value="${state.userInput}"
+                    />
+                    ${state.feedback === 'correct' ? `
+                       <div class="text-green-600 font-bold">Зөв!</div>
+                    ` : state.feedback === 'wrong' ? `
+                      <button onclick="revealAnswer('${answer.replace(/'/g, "\\'")}')" class="text-xs text-blue-500 underline uppercase tracking-tighter font-bold">Хариу харах</button>
+                    ` : `
+                      <button onclick="checkAnswer()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-100 transition-all active:scale-95">Шалгах</button>
+                    `}
+                    ${state.showAnswer ? `<div class="p-4 bg-slate-50 rounded-xl font-bold text-slate-600 animate-in">${answer}</div>` : ''}
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center mt-8">
+            <button ${state.currentIndex === 0 ? 'disabled' : ''} onclick="changeIndex(-1)" class="flex items-center gap-1 font-bold text-slate-400 disabled:opacity-20">
+              <i data-lucide="chevron-left"></i> Өмнөх
+            </button>
+            <button ${state.currentIndex === quizWords.length - 1 ? 'disabled' : ''} onclick="changeIndex(1)" class="flex items-center gap-1 font-bold text-blue-600 disabled:opacity-20">
+              Дараах <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- Actions ---
+    function updateMode(m) { state.mode = m; render(); }
+    function updateDirection(d) { state.direction = d; render(); }
+    function updateView(v) { state.view = v; render(); }
+    function updateUserInput(value) { state.userInput = value; }
+    
+    function selectUnit(id) {
+      state.currentUnit = id;
+      state.view = 'quiz';
+      state.currentIndex = 0;
+      state.shuffledWords = [];
+      resetQuizState();
+      render();
+    }
+    
+    function resetQuizState() {
+      state.showAnswer = false;
+      state.userInput = '';
+      state.feedback = null;
+    }
+    
+    function revealAnswer(ans) {
+      state.showAnswer = true;
+      if (ans && state.direction === 'mn-en') speak(ans);
+      render();
+    }
+    
+    function checkAnswer() {
+      const quizWords = getQuizWords();
+      const currentWord = quizWords[state.currentIndex];
+      const target = state.direction === 'en-mn' ? currentWord.mn : currentWord.kr;
+
+      if (state.userInput.toLowerCase().trim() === target.toLowerCase().trim()) {
+        state.feedback = 'correct';
+        state.showAnswer = true;
+        if (state.direction === 'mn-en') speak(currentWord.kr);
+      } else {
+        state.feedback = 'wrong';
+      }
+      render();
+    }
+    
+    function changeIndex(step) {
+      const quizWords = getQuizWords();
+      const newIndex = state.currentIndex + step;
+      
+      if (newIndex >= 0 && newIndex < quizWords.length) {
+        state.currentIndex = newIndex;
+        resetQuizState();
+        render();
+      }
+    }
+    
+    function markLearned(id) {
+      wordsData = wordsData.map(unit => {
+        if (unit.id === state.currentUnit) {
+          return {
+            ...unit,
+            words: unit.words.map(word => 
+              word.id === id ? { ...word, learned: true } : word
+            )
+          };
+        }
+        return unit;
+      });
+      
+      saveProgress();
+      
+      const activeUnit = wordsData.find(u => u.id === state.currentUnit);
+      const unlearnedWords = activeUnit.words.filter(w => !w.learned);
+      state.shuffledWords = shuffleArray(unlearnedWords);
+      
+      if (state.shuffledWords.length === 0) {
+        state.view = 'menu';
+      } else if (state.currentIndex >= state.shuffledWords.length) {
+        state.currentIndex = state.shuffledWords.length - 1;
+      }
+      
+      resetQuizState();
+      render();
+    }
+    
+    function speak(text) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      // Хэл сонголт: Солонгос бол ko-KR, Монгол бол mn-MN
+      utterance.lang = state.direction === 'en-mn' ? 'ko-KR' : 'mn-MN';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // --- Global functions ---
+    window.updateMode = updateMode;
+    window.updateDirection = updateDirection;
+    window.selectUnit = selectUnit;
+    window.revealAnswer = revealAnswer;
+    window.checkAnswer = checkAnswer;
+    window.changeIndex = changeIndex;
+    window.markLearned = markLearned;
+    window.speak = speak;
+    window.updateView = updateView;
+    window.resetProgress = resetProgress;
+    window.updateUserInput = updateUserInput;
+
+    document.getElementById('back-btn').onclick = () => updateView('menu');
+
+    // Initial Render
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <title>Бүртгэлийн форм</title>
+</head>
+<body>
+
+    <h2>Оюутны бүртгэл</h2>
+
+    <form action="#" method="post">
+
+        <!-- Нэр -->
+        <label>Нэр:</label><br>
+        <input type="text" name="ner" required><br><br>
+
+        <!-- И-мэйл -->
+        <label>И-мэйл:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <!-- Хүйс -->
+        <label>Хүйс:</label><br>
+        <input type="radio" name="huis" value="er"> Эр
+        <input type="radio" name="huis" value="em"> Эм<br><br>
+
+        <!-- Мэргэжил -->
+        <label>Мэргэжил:</label><br>
+        <select name="mergejil">
+            <option value="it">Мэдээллийн технологи</option>
+            <option value="design">Дизайн</option>
+            <option value="business">Бизнес</option>
+        </select><br><br>
+
+        <!-- Тайлбар -->
+        <label>Нэмэлт тайлбар:</label><br>
+        <textarea name="tailbar" rows="4" cols="30"></textarea><br><br>
+
+        <!-- Илгээх -->
+        <input type="submit" value="Илгээх">
+
+    </form>
+
+</body>
+</html>

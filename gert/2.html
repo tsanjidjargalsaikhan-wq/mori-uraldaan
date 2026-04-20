@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashonic - Bootstrap Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+    overflow-x: hidden;
+    background-color: #f3f4f7;
+    font-size: 0.9rem;
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 260px;
+    transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 1.5rem 1.25rem;
+}
+
+#sidebar-wrapper .list-group {
+    width: 260px;
+}
+
+.active-link {
+    background-color: #eef2ff !important;
+    color: #556ee6 !important;
+    font-weight: 600;
+}
+
+.list-group-item {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    color: #545a6d;
+}
+
+#page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: #74788d;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+.bg-info-subtle {
+    background-color: #e1f5fe !important;
+}
+
+/* Профайл хэсгийн зүүн талын шугам */
+.border-start {
+    border-color: #eff2f7 !important;
+}
+    </style>
+</head>
+<body>
+
+<div class="d-flex" id="wrapper">
+    <div class="bg-white border-end" id="sidebar-wrapper">
+        <div class="sidebar-heading text-primary fw-bold fs-4">UFE LAB7</div>
+        <div class="list-group list-group-flush">
+            <small class="text-muted px-3 mt-3">DASHBOARDS</small>
+            <a href="#" class="list-group-item list-group-item-action active-link border-0 mx-2 rounded mt-1">
+                <i class="fas fa-chart-line me-2"></i> Analytics
+            </a>
+            
+            <small class="text-muted px-3 mt-4">APPLICATIONS</small>
+            <a href="#" class="list-group-item list-group-item-action border-0 mx-2 mt-1">
+                <i class="fas fa-calendar me-2"></i> Calendar
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 mx-2 mt-1 d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-address-book me-2"></i> Contacts</span>
+                <i class="fas fa-chevron-down small"></i>
+            </a>
+            <div class="ps-4">
+                <a href="#" class="list-group-item list-group-item-action border-0 small py-1 text-primary fw-bold">User List</a>
+                <a href="#" class="list-group-item list-group-item-action border-0 small py-1">User Grid</a>
+            </div>
+            <a href="#" class="list-group-item list-group-item-action border-0 mx-2 mt-1">
+                <i class="fas fa-folder me-2"></i> Projects
+            </a>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4">
+            <button class="btn btn-light" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="ms-3 text-muted small">Contacts > User List</div>
+            
+            <div class="ms-auto d-flex align-items-center">
+                <i class="fas fa-search me-4 text-muted"></i>
+                <i class="fas fa-bell me-4 text-muted"></i>
+                <div class="d-flex align-items-center border-start ps-4">
+                    <div class="text-end me-2">
+                        <div class="fw-bold small">Kate Dudley</div>
+                        <div class="text-muted" style="font-size: 11px;">Administrator</div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Kate+Dudley" class="rounded-circle" width="35" alt="Avatar">
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid p-4">
+            
+            <div class="row mb-4">
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Daily Active Users</h5>
+                            <select class="form-select form-select-sm w-auto"><option>Yearly</option></select>
+                        </div>
+                        <div class="row text-center mb-4">
+                            <div class="col-md-3 border-end">
+                                <small class="text-muted d-block">Total Visitors</small>
+                                <span class="fw-bold fs-5">18.2k</span> <span class="text-success small">+1.4%</span>
+                            </div>
+                            <div class="col-md-3 border-end">
+                                <small class="text-muted d-block">Sessions</small>
+                                <span class="fw-bold fs-5">3.85k</span>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted d-block">Bounce Rate</small>
+                                <span class="fw-bold fs-5">24.03%</span>
+                            </div>
+                        </div>
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 250px;">
+                            <span class="text-muted">Line Chart Area (01 Jan - 12 Jan)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm p-3 mb-3 bg-primary text-white text-center">
+                        <small>New Visitors</small>
+                        <h4 class="mb-0">1.2k</h4>
+                    </div>
+                    <div class="card border-0 shadow-sm p-3 mb-3 text-center">
+                        <small class="text-muted">Users</small>
+                        <h4 class="mb-0">2.2k</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Contact List (834)</h5>
+                    <button class="btn btn-primary btn-sm px-3">+ Add New</button>
+                </div>
+                <div class="table-responsive p-3">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th><input type="checkbox" class="form-check-input"></th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Email</th>
+                                <th>Tags</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><img src="https://ui-avatars.com/api/?name=Donald+Risher" class="rounded-circle me-2" width="30"> <strong>Donald Risher</strong></td>
+                                <td>UI/UX Designer</td>
+                                <td>DonaldRisher@Dashonic.com</td>
+                                <td>
+                                    <span class="badge bg-light text-primary border">Photoshop</span>
+                                    <span class="badge bg-light text-primary border">Illustrator</span>
+                                </td>
+                                <td><button class="btn btn-light btn-sm"><i class="fas fa-ellipsis-h"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h5 class="mb-3">Projects Grid</h5>
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-info-subtle text-info px-2 py-1">Design</span>
+                            <i class="fas fa-ellipsis-v text-muted"></i>
+                        </div>
+                        <h6 class="fw-bold">Dashboard UI</h6>
+                        <p class="text-muted small">Duis arcu suscipit eget</p>
+                        <hr class="my-2">
+                        <div class="small text-muted">Team: 👤👤</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.// 1. Line Chart (Daily Active Users)
+const ctxLine = document.getElementById('lineChart').getContext('2d');
+new Chart(ctxLine, {
+    type: 'line',
+    data: {
+        labels: ['01 Jan', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan', '08 Jan', '09 Jan', '10 Jan'],
+        datasets: [{
+            label: 'Users',
+            data: [30, 45, 35, 50, 40, 60, 55, 70, 65, 80],
+            borderColor: '#3bafda',
+            backgroundColor: 'rgba(59, 175, 218, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// 2. Donut Chart (Visitors by Browser)
+const ctxDonut = document.getElementById('donutChart').getContext('2d');
+new Chart(ctxDonut, {
+    type: 'doughnut',
+    data: {
+        labels: ['Chrome', 'Firefox', 'Safari'],
+        datasets: [{
+            data: [82, 70, 40],
+            backgroundColor: ['#f46a6a', '#f1b44c', '#556ee6'],
+            hoverOffset: 4,
+            borderWidth: 0
+        }]
+    },
+    options: {
+        cutout: '70%',
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
