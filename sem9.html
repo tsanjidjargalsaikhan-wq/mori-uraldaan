@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB9</title>
+    <style>
+        :root {
+            --p1-color: #3498db;
+            --p2-color: #e74c3c;
+            --gold: #f1c40f;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .game-card {
+            background: white;
+            width: 90%;
+            max-width: 950px;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .dashboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        .shagai-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .shagai {
+            width: 75px;
+            height: 60px;
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #bdc3c7;
+            box-shadow: 0 4px 0 #eee;
+            transition: all 0.2s;
+        }
+
+        .shagai.is-horse {
+            background: var(--gold);
+            border-color: #d4ac0d;
+            color: #fff;
+            box-shadow: 0 4px 0 #b7950b;
+            transform: translateY(-2px);
+        }
+        .race-track {
+            position: relative;
+            background: #fafafa;
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .lane {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 2px dashed #eee;
+        }
+
+        .lane:last-child { border-bottom: none; }
+
+        .player-label {
+            width: 100px;
+            font-weight: 900;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .track-path {
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(90deg, #f1f2f6 0%, #fff 100%);
+        }
+
+        .horse-token {
+            position: absolute;
+            left: 0;
+            bottom: 10px;
+            font-size: 55px;
+            transition: left 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* МОРИЙГ ЭРГҮҮЛЭХ ХЭСЭГ: */
+            transform: scaleX(-1); 
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+            cursor: default;
+        }
+
+        #h2 { filter: scaleX(-1) hue-rotate(240deg); }
+
+        .finish-line {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 40px;
+            height: 100%;
+            background-color: #333;
+            background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), 
+                              linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+            background-size: 15px 15px;
+            background-position: 0 0, 7.5px 7.5px;
+        }
+
+        #roll-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #1e8449;
+            transition: 0.1s;
+        }
+
+        #roll-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1e8449; }
+        #roll-btn:disabled { background: #ccc; box-shadow: 0 5px 0 #aaa; cursor: not-allowed; }
+
+        .status-text { text-align: right; }
+        #turn-info { font-size: 20px; font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="dashboard">
+        <div class="shagai-group">
+            <div class="shagai" id="s1">?</div>
+            <div class="shagai" id="s2">?</div>
+            <div class="shagai" id="s3">?</div>
+            <div class="shagai" id="s4">?</div>
+        </div>
+
+        <button id="roll-btn" onclick="takeTurn()">ШАГАЙ ОРХИХ</button>
+
+        <div class="status-text">
+            <div id="turn-info">Тоглогч 1-ийн ээлж</div>
+            <small id="log" style="color: #95a5a6;">Уралдаан эхлэхэд бэлэн</small>
+        </div>
+    </div>
+
+    <div class="race-track">
+        <div class="lane">
+            <div class="player-label" style="color: var(--p1-color);">Тоглогч 1</div>
+            <div class="track-path">
+                <div id="h1" class="horse-token">🏇</div>
+                <div class="finish-line"></div>
+            </div>
+        </div>
+        <div class="lane">
+            <div class="player-label" style="color: var(--p2-color);">Тоглогч 2</div>
+            <div class="track-path">
+                <div id="h2" class="horse-token">🏇</div>
+                <div class="finish-line"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPlayer = 1;
+    let pos = { 1: 0, 2: 0 };
+    const finishMark = 90;
+
+    function takeTurn() {
+        const btn = document.getElementById('roll-btn');
+        const logs = document.getElementById('log');
+        btn.disabled = true;
+
+        let horses = 0;
+        const diceSides = ["Морь", "Хонь", "Үхэр", "Тэмээ"];
+
+        for(let i=1; i<=4; i++) {
+            const el = document.getElementById(`s${i}`);
+            el.classList.remove('is-horse');
+            el.textContent = "...";
+            
+            setTimeout(() => {
+                const res = diceSides[Math.floor(Math.random() * 4)];
+                el.textContent = res;
+                if(res === "Морь") {
+                    horses++;
+                    el.classList.add('is-horse');
+                }
+                
+                if(i === 4) finalizeTurn(horses);
+            }, i * 200);
+        }
+    }
+
+    function finalizeTurn(count) {
+        const logs = document.getElementById('log');
+        const turnInfo = document.getElementById('turn-info');
+        
+        if(count > 0) {
+            pos[currentPlayer] += (count * 10);
+            if(pos[currentPlayer] > finishMark) pos[currentPlayer] = finishMark;
+            
+            document.getElementById(`h${currentPlayer}`).style.left = pos[currentPlayer] + "%";
+            logs.textContent = `${count} морь буулаа! Урагшаа!`;
+        } else {
+            logs.textContent = "Морь буусангүй!";
+        }
+        if(pos[currentPlayer] >= finishMark) {
+            setTimeout(() => {
+                alert(`Баяр хүргэе! Тоглогч ${currentPlayer} түрүүллээ!`);
+                location.reload();
+            }, 600);
+            return;
+        }
+        setTimeout(() => {
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            turnInfo.textContent = `Тоглогч ${currentPlayer}-ийн ээлж`;
+            turnInfo.style.color = currentPlayer === 1 ? 'var(--p1-color)' : 'var(--p2-color)';
+            document.getElementById('roll-btn').disabled = false;
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
